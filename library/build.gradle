@@ -14,6 +14,11 @@ android {
 
     }
 
+    compileOptions {
+        sourceCompatibility "$sourceCompatibility"
+        targetCompatibility "$targetCompatibility"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -23,15 +28,27 @@ android {
 
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion "$supportLibrary"
+            }
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.android.support:appcompat-v7:25.4.0'
-    implementation 'com.android.support:support-v4:25.4.0'
+    implementation "com.android.support:appcompat-v7:$supportLibrary"
+    implementation "com.android.support:support-v4:$supportLibrary"
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.nineoldandroids:library:2.4.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation 'com.android.support:support-vector-drawable:25.4.0'
 }
